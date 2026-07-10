@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First Robot — Student Guide</title>
+<style>
+  :root {
+    --ink: #1e2430;
+    --muted: #5b6472;
+    --accent: #0f766e;
+    --accent-light: #ccfbf1;
+    --warn-bg: #fef3c7;
+    --warn-border: #f59e0b;
+    --safe-bg: #ecfdf5;
+    --safe-border: #10b981;
+    --card: #f6f8fa;
+    --border: #d8dee6;
+    --code-bg: #0f172a;
+    --code-ink: #e2e8f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    line-height: 1.6;
+    margin: 0;
+    background: #fff;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, #0f766e, #134e4a);
+    color: #fff;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  header.hero h1 { margin: 0; font-size: 2.4rem; letter-spacing: 1px; }
+  header.hero p { margin: 12px auto 0; max-width: 560px; font-size: 1.1rem; opacity: 0.92; }
+  header.hero .robot { font-size: 3rem; display: block; margin-bottom: 8px; }
+  h2 {
+    color: var(--accent);
+    font-size: 1.5rem;
+    margin-top: 56px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--accent-light);
+  }
+  h3 { font-size: 1.15rem; margin-top: 32px; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 0.95rem;
+  }
+  th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--accent); color: #fff; }
+  tr:nth-child(even) td { background: var(--card); }
+  .callout {
+    border-left: 5px solid var(--accent);
+    background: var(--card);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+  }
+  .callout.warn { border-color: var(--warn-border); background: var(--warn-bg); }
+  .callout.safe { border-color: var(--safe-border); background: var(--safe-bg); }
+  .callout strong:first-child { display: inline; }
+  ol.steps { counter-reset: step; list-style: none; padding-left: 0; }
+  ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 4px 0 4px 52px;
+    margin: 14px 0;
+  }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 2px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  ul.kit { list-style: none; padding-left: 0; }
+  ul.kit li {
+    padding: 8px 12px 8px 40px;
+    position: relative;
+    border-bottom: 1px dashed var(--border);
+  }
+  ul.kit li::before {
+    content: "☐";
+    position: absolute;
+    left: 10px;
+    color: var(--accent);
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+  code { font-family: "Cascadia Code", Consolas, Menlo, monospace; }
+  p code, li code, td code {
+    background: var(--accent-light);
+    color: #0f5132;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .comment { color: #7dd3a7; }
+  .kw { color: #93c5fd; }
+  .str { color: #fbbf24; }
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-right: 6px;
+  }
+  .badge.easy { background: #dcfce7; color: #166534; }
+  .badge.med  { background: #fef9c3; color: #854d0e; }
+  .badge.adv  { background: #fee2e2; color: #991b1b; }
+  .sta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 24px 0;
+  }
+  .sta .cell {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .sta .cell .icon { font-size: 2rem; }
+  .sta .cell h4 { margin: 8px 0 4px; color: var(--accent); letter-spacing: 1px; }
+  .sta .cell p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+  @media (max-width: 620px) { .sta { grid-template-columns: 1fr; } }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 64px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+  @media print {
+    header.hero { background: var(--accent); -webkit-print-color-adjust: exact; }
+    h2 { page-break-after: avoid; }
+    pre, table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="robot">🤖</span>
+  <h1>MY FIRST ROBOT</h1>
+  <p><strong>Student Guide</strong> — a 2-hour hands-on workshop. By the end, your robot will drive on its own and stop before it hits a wall — and you'll know how to change its behavior with code.</p>
+</header>
+
+<div class="wrap">
+
+<h2>The Big Idea: Sense → Think → Act</h2>
+<p>Every robot — from a Roomba to a Mars rover — does the same three things:</p>
+
+<div class="sta">
+  <div class="cell">
+    <div class="icon">👁️</div>
+    <h4>SENSE</h4>
+    <p>Notice the world.<br><strong>VL53L0X</strong> laser distance sensor — the "eye."</p>
+  </div>
+  <div class="cell">
+    <div class="icon">🧠</div>
+    <h4>THINK</h4>
+    <p>Decide what to do.<br><strong>ESP32</strong> microcontroller — the "brain."</p>
+  </div>
+  <div class="cell">
+    <div class="icon">⚙️</div>
+    <h4>ACT</h4>
+    <p>Do something about it.<br><strong>DRV8833 + motors</strong> — the "muscles" and "wheels."</p>
+  </div>
+</div>
+
+<p>Keep this in mind all day. Whenever you're confused, ask yourself: is this part <em>sensing</em>, <em>thinking</em>, or <em>acting</em>?</p>
+
+<h2>Step 1 — Check Your Kit</h2>
+<p>Open your bag and find each part. Check them off as you go:</p>
+<ul class="kit">
+  <li><strong>ESP32 DevKit V1</strong> — the brain. Runs your code, talks to the sensor, drives the motors.</li>
+  <li><strong>DRV8833 motor driver</strong> — the muscles. Turns weak signals from the brain into strong power for the motors, and lets them run forward <em>or</em> backward.</li>
+  <li><strong>2× yellow TT gear motors with wheels</strong> — the legs. Two independent wheels let the robot go straight, curve, or spin in place.</li>
+  <li><strong>VL53L0X distance sensor</strong> — the eye. A tiny laser tape measure that works up to about 1.2&nbsp;m.</li>
+  <li><strong>4×AA battery holder</strong> — the heart. Powers the motors and the ESP32. No power switch — the batteries only go in when it's time to drive.</li>
+  <li><strong>4× AA batteries</strong></li>
+  <li><strong>Chassis</strong> — the flat base everything mounts to.</li>
+  <li><strong>Caster wheel or marble</strong> — the third point of contact behind the two wheels.</li>
+  <li><strong>~12 jumper wires</strong> (male-male and male-female)</li>
+  <li><strong>Micro-USB cable</strong> (a <em>data</em> cable, not charge-only)</li>
+  <li><strong>Assorted screws and nuts</strong></li>
+  <li><strong>Small Phillips screwdriver</strong></li>
+  <li><strong>2.5mm Allen wrench</strong></li>
+</ul>
+<p>Missing something? Ask a helper <strong>now</strong>, not at step 4.</p>
+
+<div class="callout">
+  <strong>Why can't the ESP32 spin the motors by itself?</strong><br>
+  Two reasons. First, an ESP32 pin can supply about 20–40&nbsp;mA of current, but a gear motor wants <strong>200+&nbsp;mA</strong> just to start moving. Second, to make a motor spin <em>backward</em>, the current has to flow through it in the <em>opposite direction</em> — the polarity gets reversed, like putting a battery in backwards. The DRV8833 contains an "H-bridge," a circuit that can do both: deliver the big current and flip its direction. Brain → muscles → wheels.
+</div>
+
+<h2>Step 2 — Build the Body</h2>
+<ol class="steps">
+  <li><strong>Mount the motors</strong> to the chassis with screws.</li>
+  <li><strong>Push the wheels</strong> onto the motor shafts.</li>
+  <li><strong>Attach the caster</strong> (or marble ball-bearing) behind the wheels.</li>
+  <li><strong>Wire the motor leads</strong> to the DRV8833 outputs: left motor → AOUT1/AOUT2, right motor → BOUT1/BOUT2. Don't worry about which wire goes where — if a wheel spins the wrong way later, we fix it in code (or just swap the two wires).</li>
+  <li><strong>Bolt the battery pack</strong> on top using screws and nuts from the assortment — the Allen wrench and Phillips screwdriver are your friends here.</li>
+</ol>
+
+<h2>Step 3 — Wire the Brain</h2>
+<div class="callout warn">
+  <strong>⚡ Keep the batteries OUT of the holder for this whole step.</strong> There's no power switch — the batteries <em>are</em> the switch.
+</div>
+
+<table>
+  <tr><th>From</th><th>To (ESP32 pin)</th><th>Notes</th></tr>
+  <tr><td>DRV8833 AIN1</td><td>GPIO 14</td><td>Left motor direction A</td></tr>
+  <tr><td>DRV8833 AIN2</td><td>GPIO 27</td><td>Left motor direction B</td></tr>
+  <tr><td>DRV8833 BIN1</td><td>GPIO 26</td><td>Right motor direction A</td></tr>
+  <tr><td>DRV8833 BIN2</td><td>GPIO 25</td><td>Right motor direction B</td></tr>
+  <tr><td>DRV8833 AOUT1/2</td><td>Left motor</td><td>Polarity doesn't matter — swap later if it spins backward</td></tr>
+  <tr><td>DRV8833 BOUT1/2</td><td>Right motor</td><td>Same — swap if needed</td></tr>
+  <tr><td>DRV8833 VM</td><td>Battery +</td><td>Motor power, ≈6&nbsp;V from 4×AA</td></tr>
+  <tr><td>DRV8833 GND</td><td>ESP32 GND <strong>and</strong> Battery −</td><td>Common ground is essential</td></tr>
+  <tr><td>VL53L0X VCC</td><td>3V3</td><td><strong>NOT 5V</strong> — this sensor is 3.3&nbsp;V only</td></tr>
+  <tr><td>VL53L0X GND</td><td>GND</td><td></td></tr>
+  <tr><td>VL53L0X SDA</td><td>GPIO 21</td><td>I²C data</td></tr>
+  <tr><td>VL53L0X SCL</td><td>GPIO 22</td><td>I²C clock</td></tr>
+  <tr><td>ESP32 VIN</td><td>Battery + (optional)</td><td>Lets the battery pack power the ESP32 — only after wiring is checked</td></tr>
+</table>
+
+<div class="callout">
+  <strong>Cool fact:</strong> the sensor talks to the brain over just two wires (SDA and SCL). That's called <strong>I²C</strong>, and it's a shared bus — you could add more sensors later on the <em>same</em> two wires.
+</div>
+
+<h3>✅ Safety Checks Before Powering On</h3>
+<p>Go through all four. Then have a helper eyeball your wiring <strong>before</strong> any batteries go in.</p>
+<ol class="steps">
+  <li><strong>Common ground?</strong> ESP32 GND, DRV8833 GND, and Battery − must all connect.</li>
+  <li><strong>VL53L0X on 3.3&nbsp;V, not 5&nbsp;V.</strong></li>
+  <li><strong>No bare motor wires</strong> touching each other or the chassis.</li>
+  <li><strong>Batteries stay out of the holder</strong> until a helper has checked your work.</li>
+</ol>
+
+<h2>Step 4 — Code: Make It Move</h2>
+<p>Open the starter sketch in the Arduino IDE (it's already on your laptop — you don't need to type it).</p>
+
+<pre><code>#include &lt;Wire.h&gt;
+#include &lt;Adafruit_VL53L0X.h&gt;
+
+<span class="comment">// Motor pins (DRV8833)</span>
+<span class="kw">const int</span> AIN1 = 14, AIN2 = 27;   <span class="comment">// left motor</span>
+<span class="kw">const int</span> BIN1 = 26, BIN2 = 25;   <span class="comment">// right motor</span>
+
+Adafruit_VL53L0X lox;
+
+<span class="kw">void</span> drive(<span class="kw">int</span> left, <span class="kw">int</span> right) {
+  <span class="comment">// values from -255 to +255</span>
+  analogWrite(AIN1, left  &gt; 0 ?  left : 0);
+  analogWrite(AIN2, left  &lt; 0 ? -left : 0);
+  analogWrite(BIN1, right &gt; 0 ?  right : 0);
+  analogWrite(BIN2, right &lt; 0 ? -right : 0);
+}
+
+<span class="kw">void</span> setup() {
+  Serial.begin(115200);
+  pinMode(AIN1, OUTPUT); pinMode(AIN2, OUTPUT);
+  pinMode(BIN1, OUTPUT); pinMode(BIN2, OUTPUT);
+  <span class="kw">if</span> (!lox.begin()) { Serial.println(<span class="str">"Sensor not found"</span>); <span class="kw">while</span> (1); }
+}
+
+<span class="kw">void</span> loop() {
+  VL53L0X_RangingMeasurementData_t m;
+  lox.rangingTest(&amp;m, false);
+  <span class="kw">int</span> d = (m.RangeStatus != 4) ? m.RangeMilliMeter : 9999;
+  Serial.println(d);
+
+  <span class="kw">if</span> (d &gt; 200) {
+    drive(200, 200);          <span class="comment">// forward</span>
+  } <span class="kw">else</span> {
+    drive(180, -180);         <span class="comment">// spin to find a clear path</span>
+    delay(400);
+  }
+}</code></pre>
+
+<p><strong>What the pieces do:</strong></p>
+<ul>
+  <li><code>drive(left, right)</code> — sets each wheel's speed, from −255 (full reverse) to +255 (full forward). <code>analogWrite()</code> sends a PWM signal — a fast on/off pulse that acts like a volume knob for the motor.</li>
+  <li><code>setup()</code> — runs once. Sets the pins up and starts the sensor. If the sensor isn't found, it prints a message and stops.</li>
+  <li><code>loop()</code> — runs forever. Reads the distance, then decides: path clear → drive forward; obstacle close → spin and look for a way out.</li>
+</ul>
+
+<p>Now:</p>
+<ol class="steps">
+  <li>Plug in the USB cable and click <strong>Upload</strong>.</li>
+  <li>Unplug USB, put the robot on the floor, and pop the batteries into the holder.</li>
+  <li><strong>One wheel spinning backward?</strong> Totally normal. Swap that motor's two wires at the DRV8833 — or swap its two GPIO numbers in the code. Either fix works.</li>
+  <li>It moves? 🎉 Celebrate. You built a robot.</li>
+</ol>
+
+<div class="callout safe">
+  <strong>Try it:</strong> make both wheels different speeds — <code>drive(200, 100)</code>. What happens? One forward, one reverse? One forward, one stopped? This two-wheels-plus-caster setup is called <strong>differential drive</strong>, and it's how you steer with no steering wheel.
+</div>
+
+<h2>Step 5 — Code: Make It See</h2>
+<p>This is the magic moment — the robot reacts to the world.</p>
+
+<div class="callout warn">
+  The sensor measures distance in <strong>millimeters</strong>. That trips up almost everyone: a threshold of <code>20</code> isn't 20&nbsp;cm — it's 2&nbsp;cm, so the robot thinks the wall is always far away!
+</div>
+
+<ol class="steps">
+  <li>Open the <strong>Serial Monitor</strong> (set it to 115200 baud) and watch the live distance readings. Wave your hand in front of the sensor.</li>
+  <li>Find the line <code>if (d &gt; 200)</code>. That's the rule: <em>if the nearest thing is more than 200&nbsp;mm (20&nbsp;cm) away, keep driving; otherwise spin.</em></li>
+  <li>Upload, put it in front of a wall, and watch it stop and turn.</li>
+  <li><strong>Tune it.</strong> Try 100&nbsp;mm. Try 400&nbsp;mm. What feels right?</li>
+</ol>
+
+<h2>When Something Goes Wrong (It Will — That's the Fun Part)</h2>
+<div class="callout">
+  <strong>Golden rule: it's almost never the code.</strong> About 80% of robot problems are wiring or power — a loose jumper, swapped pins, tired batteries. Check power and connections <em>first</em>, code <em>second</em>.
+</div>
+
+<table>
+  <tr><th>Symptom</th><th>Likely cause &amp; fix</th></tr>
+  <tr><td>Robot does nothing</td><td>Batteries in the holder and the right way around? DRV8833 VM and GND wired? Did the upload actually finish ("Done uploading")?</td></tr>
+  <tr><td>One wheel spins backward</td><td>Swap that motor's two leads at the DRV8833 — or flip its two GPIOs in code.</td></tr>
+  <tr><td>Both wheels backward</td><td>The direction logic is mirrored — reverse it in the sketch.</td></tr>
+  <tr><td>Robot drifts left or right</td><td>The motors aren't perfectly matched. Lower the PWM on the faster side by 10–20 (e.g., 200 vs 220).</td></tr>
+  <tr><td>Distance reads 8190 or always 0</td><td>Sensor not detected. Check SDA/SCL aren't swapped and the sensor is on 3.3&nbsp;V (not 5&nbsp;V).</td></tr>
+  <tr><td>ESP32 keeps rebooting</td><td>Brownout — low batteries, or it's powered by USB while motors draw current. Fresh AAs; unplug USB for driving tests.</td></tr>
+  <tr><td>Upload fails: "Failed to connect"</td><td>Hold the <strong>BOOT</strong> button while clicking Upload; release when "Connecting..." appears. Make sure the cable is a data cable.</td></tr>
+  <tr><td>Sensor works but robot doesn't stop</td><td>Units! The sensor reports <strong>mm</strong>. 200&nbsp;mm = 20&nbsp;cm. Print the distance to Serial and check your threshold.</td></tr>
+</table>
+
+<h2>Finished Early? Level Up</h2>
+
+<h3><span class="badge easy">Easy</span> 5–10 minutes</h3>
+<ul>
+  <li>Tune the threshold and turn time. How close can the robot get before it stops?</li>
+  <li>Change the spin direction — does your robot prefer left or right?</li>
+  <li>Make it faster or slower by changing the PWM values.</li>
+</ul>
+
+<h3><span class="badge med">Medium</span> 10–20 minutes</h3>
+<ul>
+  <li>Add a piezo buzzer on a spare GPIO — beep when an obstacle is close.</li>
+  <li>Add an LED that gets brighter as the robot nears a wall (map distance → <code>analogWrite</code>).</li>
+  <li>Make the spin time proportional to distance — far obstacle, short turn; close obstacle, long turn.</li>
+</ul>
+
+<h3><span class="badge adv">Advanced</span> 20+ minutes, or at home</h3>
+<ul>
+  <li>Add a <strong>second VL53L0X</strong>. Both share the I²C bus but need different addresses — use the XSHUT pin to start them one at a time.</li>
+  <li>Add <strong>Wi-Fi control</strong>: drive the robot from a web page served by the ESP32 itself.</li>
+  <li>Log distance readings to Serial and plot them in the Arduino IDE <strong>Serial Plotter</strong> — you've just built a turtle that draws a map.</li>
+</ul>
+
+<h2>Safety Notes</h2>
+<ul>
+  <li><strong>Eyes:</strong> don't stare directly into the VL53L0X. It's a Class 1 laser (eye-safe under normal conditions), but treating every laser with respect is a good habit for bigger projects later.</li>
+  <li><strong>Batteries:</strong> AAs are very safe, but a short circuit still heats up wires. That's why a helper checks your wiring before power-on.</li>
+  <li><strong>Small parts:</strong> screws and jumpers roll away. Keep them in the parts tray.</li>
+  <li><strong>Driving area:</strong> keep the floor space clear of bags and cables. Robots will bump into each other — that's fine.</li>
+</ul>
+
+<h2>Before You Go — Can You Answer These?</h2>
+<ol class="steps">
+  <li>Point to the part of your robot that <strong>senses</strong>. Now the part that <strong>thinks</strong>. Now the part that <strong>acts</strong>.</li>
+  <li>Why can't the ESP32 spin the motors directly?</li>
+  <li>Your robot is driving backward. What's the fastest fix — code or wiring? (Either is fine!)</li>
+  <li>If you had one more sensor, what would it be — and what would your robot do with it?</li>
+</ol>
+
+<p>If you can answer those, you didn't just build a robot. You <em>understand</em> it. Take it home, take the extension sheet, and keep going. 🤖</p>
+
+<footer>My First Robot — Student Guide · 2-Hour Hands-On Workshop</footer>
+
+</div>
+</body>
+</html>
