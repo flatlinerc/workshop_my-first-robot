@@ -178,7 +178,7 @@ The sensor measures distance in **millimeters**. That trips up almost everyone: 
 |---|---|
 | Robot does nothing | Batteries in the holder and the right way around? DRV8833 VM and GND wired? Did the upload actually finish ("Done uploading")? |
 | One wheel spins backward | Swap that motor's two leads at the DRV8833 — or flip its two GPIOs in code. |
-| Both wheels backward | The direction logic is mirrored — reverse it in the sketch. |
+| Both wheels backward | Reverse the driver output wires (swap each motor's two leads at the DRV8833 outputs) — or reverse the output in the code. |
 | Robot drifts left or right | The motors aren't perfectly matched. Lower the PWM on the faster side by 10–20 (e.g., 200 vs 220). |
 | Distance reads 8190 or always 0 | Sensor not detected. Check SDA/SCL aren't swapped and the sensor is on 3.3 V (not 5 V). |
 | ESP32 keeps rebooting | Brownout — low batteries, or it's powered by USB while motors draw current. Fresh AAs; unplug USB for driving tests. |

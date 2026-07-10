@@ -355,7 +355,7 @@ Adafruit_VL53L0X lox;
   <tr><th>Symptom</th><th>Likely cause &amp; fix</th></tr>
   <tr><td>Robot does nothing</td><td>Batteries in the holder and the right way around? DRV8833 VM and GND wired? Did the upload actually finish ("Done uploading")?</td></tr>
   <tr><td>One wheel spins backward</td><td>Swap that motor's two leads at the DRV8833 — or flip its two GPIOs in code.</td></tr>
-  <tr><td>Both wheels backward</td><td>The direction logic is mirrored — reverse it in the sketch.</td></tr>
+  <tr><td>Both wheels backward</td><td>Reverse the driver output wires (swap each motor's two leads at the DRV8833 outputs) — or reverse the output in the code.</td></tr>
   <tr><td>Robot drifts left or right</td><td>The motors aren't perfectly matched. Lower the PWM on the faster side by 10–20 (e.g., 200 vs 220).</td></tr>
   <tr><td>Distance reads 8190 or always 0</td><td>Sensor not detected. Check SDA/SCL aren't swapped and the sensor is on 3.3&nbsp;V (not 5&nbsp;V).</td></tr>
   <tr><td>ESP32 keeps rebooting</td><td>Brownout — low batteries, or it's powered by USB while motors draw current. Fresh AAs; unplug USB for driving tests.</td></tr>
