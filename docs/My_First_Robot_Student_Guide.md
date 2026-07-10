@@ -31,8 +31,9 @@ Open your bag and find each part. Check them off as you go:
 - [ ] **Chassis** (the flat base everything mounts to)
 - [ ] **Caster wheel or marble** — the third point of contact behind the two wheels.
 - [ ] **~12 jumper wires** (male-male and male-female)
+- [ ] **WAGO splice connectors** — for sharing battery power and ground between boards. Lift the lever, push the wire in, snap the lever down.
 - [ ] **Micro-USB cable** (a *data* cable, not charge-only)
-- [ ] **Assorted screws and nuts**
+- [ ] **Assorted screws and nuts** (including short M3s for the sensor)
 - [ ] **Small Phillips screwdriver**
 - [ ] **2.5mm Allen wrench**
 
@@ -49,9 +50,12 @@ Two reasons. First, an ESP32 pin can supply about 20–40 mA of current, but a g
 1. **Mount the motors** to the chassis with screws.
 2. **Push the wheels** onto the motor shafts.
 3. **Attach the caster** (or marble ball-bearing) behind the wheels.
-4. **Wire the motor leads** to the DRV8833 outputs: left motor → AOUT1/AOUT2, right motor → BOUT1/BOUT2.
+4. **Bolt the VL53L0X sensor to the front** of the chassis with the short M3 screws and nuts. It's the robot's eye — it needs a clear view straight ahead, so make sure nothing blocks it.
+5. **Insert the DRV8833 motor controller into its slot** on the chassis.
+6. **Screw the ESP32 into position.**
+7. **Wire the motor leads** to the DRV8833 outputs: left motor → AOUT1/AOUT2, right motor → BOUT1/BOUT2.
    Don't worry about which wire goes where — if a wheel spins the wrong way later, we fix it in code (or just swap the two wires).
-5. **Bolt the battery pack** on top using screws and nuts from the assortment — the Allen wrench and Phillips screwdriver are your friends here.
+8. **Bolt the battery pack** on top using screws and nuts from the assortment — the Allen wrench and Phillips screwdriver are your friends here.
 
 ---
 
@@ -59,7 +63,9 @@ Two reasons. First, an ESP32 pin can supply about 20–40 mA of current, but a g
 
 ⚡ **Keep the batteries OUT of the holder for this whole step.** There's no power switch — the batteries *are* the switch.
 
-Connect these with jumper wires:
+Battery + and ground are *shared* connections — several wires need to join the same point. That's what the **WAGO splices** are for: one splice collects Battery + (feeding DRV8833 VM and ESP32 VIN), another collects all the grounds (Battery −, DRV8833 GND, ESP32 GND). Lift the lever, push the wire in all the way, snap the lever down, then tug gently to make sure it's caught.
+
+Connect everything else with jumper wires:
 
 | From | To (ESP32 pin) | Notes |
 |---|---|---|
@@ -69,13 +75,13 @@ Connect these with jumper wires:
 | DRV8833 BIN2 | GPIO 25 | Right motor direction B |
 | DRV8833 AOUT1/2 | Left motor | Polarity doesn't matter — swap later if it spins backward |
 | DRV8833 BOUT1/2 | Right motor | Same — swap if needed |
-| DRV8833 VM | Battery + | Motor power, ≈6 V from 4×AA |
-| DRV8833 GND | ESP32 GND **and** Battery − | Common ground is essential |
+| DRV8833 VM | Battery + | Motor power, ≈6 V from 4×AA — shared through the battery + WAGO splice |
+| DRV8833 GND | ESP32 GND **and** Battery − | All grounds meet in the ground WAGO splice — common ground is essential |
 | VL53L0X VCC | 3V3 | **NOT 5V** — this sensor is 3.3 V only |
 | VL53L0X GND | GND | |
 | VL53L0X SDA | GPIO 21 | I²C data |
 | VL53L0X SCL | GPIO 22 | I²C clock |
-| ESP32 VIN | Battery + (optional) | Lets the battery pack power the ESP32 — only after wiring is checked |
+| ESP32 VIN | Battery + (optional) | From the same battery + WAGO splice — lets the battery pack power the ESP32, only after wiring is checked |
 
 **Cool fact:** the sensor talks to the brain over just two wires (SDA and SCL). That's called **I²C**, and it's a shared bus — you could add more sensors later on the *same* two wires.
 
@@ -83,7 +89,7 @@ Connect these with jumper wires:
 
 Go through all four. Then have a helper eyeball your wiring **before** any batteries go in.
 
-1. **Common ground?** ESP32 GND, DRV8833 GND, and Battery − must all connect.
+1. **Common ground?** ESP32 GND, DRV8833 GND, and Battery − must all connect — they should all meet in the ground WAGO splice. Tug each wire to check it's gripped.
 2. **VL53L0X on 3.3 V, not 5 V.**
 3. **No bare motor wires** touching each other or the chassis.
 4. **Batteries stay out of the holder** until a helper has checked your work.
