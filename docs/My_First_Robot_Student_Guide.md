@@ -30,10 +30,16 @@ Open your bag and find each part. Check them off as you go:
 - [ ] **4× AA batteries**
 - [ ] **Chassis** (the flat base everything mounts to)
 - [ ] **Caster wheel or marble** — the third point of contact behind the two wheels.
-- [ ] **~12 jumper wires** (male-male and male-female)
+- [ ] **~12 jumper wires** (male-female and female-female)
 - [ ] **WAGO splice connectors** — for sharing battery power and ground between boards. Lift the lever, push the wire in, snap the lever down.
 - [ ] **Micro-USB cable** (a *data* cable, not charge-only)
-- [ ] **Assorted screws and nuts** (including short M3s for the sensor)
+- [ ] **Screw kit:**
+  - 2× small M3 hex socket head cap screws — for the lidar (VL53L0X)
+  - 2× longer M3 hex socket head cap screws — for the motors
+  - 4× M3 nuts — pair with the M3 screws above
+  - 4× #2-28 pan head Phillips thread rolling screws — for the ESP32 mount
+  - 2× M3.5 flat head Phillips screws + 2× M3.5 nuts — for the battery pack
+  - 2× #6 pan head Phillips thread rolling screws — for the caster
 - [ ] **Small Phillips screwdriver**
 - [ ] **2.5mm Allen wrench**
 
@@ -47,15 +53,15 @@ Two reasons. First, an ESP32 pin can supply about 20–40 mA of current, but a g
 
 ## Step 2 — Build the Body
 
-1. **Mount the motors** to the chassis with screws.
-2. **Push the wheels** onto the motor shafts.
-3. **Attach the caster** (or marble ball-bearing) behind the wheels.
-4. **Bolt the VL53L0X sensor to the front** of the chassis with the short M3 screws and nuts. It's the robot's eye — it needs a clear view straight ahead, so make sure nothing blocks it.
-5. **Insert the DRV8833 motor controller into its slot** on the chassis.
-6. **Screw the ESP32 into position.**
-7. **Wire the motor leads** to the DRV8833 outputs: left motor → AOUT1/AOUT2, right motor → BOUT1/BOUT2.
+1. **Mount the motors** to the chassis with the two longer M3 socket head cap screws and M3 nuts (2.5mm Allen wrench). **Leave the wheels off for now** — they get in the way while you work.
+2. **Bolt the VL53L0X sensor to the front** of the chassis with the two small M3 socket head cap screws and M3 nuts. It's the robot's eye — it needs a clear view straight ahead, so make sure nothing blocks it.
+3. **Insert the DRV8833 motor controller into its slot** on the chassis.
+4. **Screw the ESP32 into position** with the four #2-28 pan head Phillips thread rolling screws.
+5. **Wire the motor leads** to the DRV8833 outputs: left motor → AOUT1/AOUT2, right motor → BOUT1/BOUT2.
    Don't worry about which wire goes where — if a wheel spins the wrong way later, we fix it in code (or just swap the two wires).
-8. **Bolt the battery pack** on top using screws and nuts from the assortment — the Allen wrench and Phillips screwdriver are your friends here.
+6. **Bolt the battery pack** on top with the two M3.5 flat head Phillips screws and M3.5 nuts.
+
+The caster and wheels come *after* the wiring in Step 3 — a robot without wheels can't roll off your table, and wheels get in the way of your hands.
 
 ---
 
@@ -83,7 +89,16 @@ Connect everything else with jumper wires:
 | VL53L0X SCL | GPIO 22 | I²C clock |
 | ESP32 VIN | Battery + (optional) | From the same battery + WAGO splice — lets the battery pack power the ESP32, only after wiring is checked |
 
+**Check the labels:** on this microcontroller — an ESP32 DevKit V1 — the D numbers printed on the board match the GPIO numbers (D14 = GPIO 14). But this is **not always the case** on other boards, so it's important to check the pinouts and datasheets of all your components.
+
 **Cool fact:** the sensor talks to the brain over just two wires (SDA and SCL). That's called **I²C**, and it's a shared bus — you could add more sensors later on the *same* two wires.
+
+### Finish the Body
+
+Once the sensor is wired:
+
+1. **Attach the caster** behind the motors with the two #6 pan head Phillips thread rolling screws.
+2. **Push the wheels** onto the motor shafts — they go on last because they get in the way of everything else.
 
 ### ✅ Safety Checks Before Powering On
 
@@ -98,7 +113,19 @@ Go through all four. Then have a helper eyeball your wiring **before** any batte
 
 ## Step 4 — Code: Make It Move
 
-Open the starter sketch in the Arduino IDE (it's already on your laptop — you don't need to type it).
+### Get the Arduino IDE Ready
+
+The Arduino IDE is the program that sends code to your robot's brain. Set it up once:
+
+1. Open the **Arduino IDE** on your laptop.
+2. **File → Open** and pick the starter sketch (a helper can point you to it — you don't need to type it).
+3. Plug the micro-USB cable into the ESP32 and the laptop.
+4. **Tell the IDE which board you have:** Tools → Board → esp32 → **DOIT ESP32 DEVKIT V1**. (Or click the dropdown at the top of the window, choose "Select other board and port…", and search for it.)
+5. **Tell it which port the robot is on:** Tools → Port. Not sure which entry is your ESP32? Unplug the USB cable, look at the list, plug it back in — the port that appears is the one (Windows: `COM3`-style, Mac: `/dev/cu.usbserial-…`).
+
+You only do this once — the IDE remembers your board and port until you switch laptops.
+
+### The Starter Sketch
 
 ```cpp
 #include <Wire.h>
@@ -146,12 +173,14 @@ void loop() {
 - `setup()` — runs once. Sets the pins up and starts the sensor. If the sensor isn't found, it prints a message and stops.
 - `loop()` — runs forever. Reads the distance, then decides: path clear → drive forward; obstacle close → spin and look for a way out.
 
-Now:
+### Upload and Drive
 
-1. Plug in the USB cable and click **Upload**.
-2. Unplug USB, put the robot on the floor, and pop the batteries into the holder.
-3. **One wheel spinning backward?** Totally normal. Swap that motor's two wires at the DRV8833 — or swap its two GPIO numbers in the code. Either fix works.
-4. It moves? 🎉 Celebrate. You built a robot.
+1. Click the **✓ Verify** button (top-left) to compile the code. No red errors in the console at the bottom means the code is good.
+2. Click the **→ Upload** button (right next to it). Watch the console: you'll see "Connecting...", then a rising percentage, and finally **"Done uploading."**
+3. **"Failed to connect"?** Hold down the **BOOT** button on the ESP32 while the console says "Connecting...", and release it when the upload starts. (Some boards need this nudge every time.)
+4. Unplug USB, put the robot on the floor, and pop the batteries into the holder.
+5. **One wheel spinning backward?** Totally normal. Swap that motor's two wires at the DRV8833 — or swap its two GPIO numbers in the code. Either fix works.
+6. It moves? 🎉 Celebrate. You built a robot.
 
 **Try it:** make both wheels different speeds — `drive(200, 100)`. What happens? One forward, one reverse? One forward, one stopped? This two-wheels-plus-caster setup is called **differential drive**, and it's how you steer with no steering wheel.
 
@@ -163,7 +192,7 @@ This is the magic moment — the robot reacts to the world.
 
 The sensor measures distance in **millimeters**. That trips up almost everyone: a threshold of `20` isn't 20 cm — it's 2 cm, so the robot thinks the wall is always far away!
 
-1. Open the **Serial Monitor** (set it to 115200 baud) and watch the live distance readings. Wave your hand in front of the sensor.
+1. Open the **Serial Monitor** — click the magnifying-glass icon in the top-right corner of the IDE (or Tools → Serial Monitor) and set the baud dropdown to **115200**, or the text will be gibberish. With USB plugged in, watch the live distance readings scroll by. Wave your hand in front of the sensor.
 2. Find the line `if (d > 200)`. That's the rule: *if the nearest thing is more than 200 mm (20 cm) away, keep driving; otherwise spin.*
 3. Upload, put it in front of a wall, and watch it stop and turn.
 4. **Tune it.** Try 100 mm. Try 400 mm. What feels right?
@@ -221,5 +250,7 @@ The sensor measures distance in **millimeters**. That trips up almost everyone: 
 2. Why can't the ESP32 spin the motors directly?
 3. Your robot is driving backward. What's the fastest fix — code or wiring? (Either is fine!)
 4. If you had one more sensor, what would it be — and what would your robot do with it?
+
+**Want to keep coding at home?** Install the free Arduino IDE from arduino.cc, then add ESP32 support: open **Boards Manager** (left sidebar), search "esp32", and install **esp32 by Espressif Systems**. Then open **Library Manager**, search "Adafruit VL53L0X", and click Install (say yes to dependencies). That's the exact setup the workshop laptops use.
 
 If you can answer those, you didn't just build a robot. You *understand* it. Take it home, take the extension sheet, and keep going. 🤖
